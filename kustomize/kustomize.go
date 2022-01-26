@@ -3,7 +3,6 @@ package kustomize
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ZupIT/charlescd-kustomize/cache"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"path/filepath"
 	"sigs.k8s.io/kustomize/api/resmap"
@@ -18,6 +17,11 @@ type Getter interface {
 	Get() error
 }
 
+type Cache interface {
+	GetManifests(source string) ([]unstructured.Unstructured, error)
+	Add(key, value interface{}) error
+}
+
 type KustomizerWrapper struct {
 	FSys        filesys.FileSystem
 	Renderer    Renderer
@@ -25,11 +29,11 @@ type KustomizerWrapper struct {
 	Destination string
 	Source      string
 	Path        string
-	Cache       cache.Wrapper
+	Cache       Cache
 }
 
 // New Instantiate a new Wrapper of Kustomize that will do the `kustomize build` of the source
-func New(kustomizer Renderer, client Getter, destination, source, path string, cache cache.Wrapper) KustomizerWrapper {
+func New(kustomizer Renderer, client Getter, destination, source, path string, cache Cache) KustomizerWrapper {
 	fsys := filesys.MakeFsOnDisk()
 
 	return KustomizerWrapper{Renderer: kustomizer, FSys: fsys, Client: client, Destination: destination, Source: source, Path: path, Cache: cache}
