@@ -1,15 +1,28 @@
+/*
+ * Copyright 2022 ZUP IT SERVICOS EM TECNOLOGIA E INOVACAO SA
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package main
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/ZupIT/charlescd-kustomize/cache"
 	"github.com/ZupIT/charlescd-kustomize/kustomize"
-	"github.com/dgraph-io/ristretto"
 	"github.com/dgraph-io/ristretto/z"
 	"github.com/hashicorp/go-getter"
-	"net/http"
 	"os"
 	"path/filepath"
 	"sigs.k8s.io/kustomize/api/krusty"
@@ -18,15 +31,6 @@ import (
 )
 
 func main() {
-	cacheClient, err := ristretto.NewCache(&ristretto.Config{
-		NumCounters: 1e7,     // number of keys to track frequency of (10M).
-		MaxCost:     1 << 30, // maximum cost of cache (1GB).
-		BufferItems: 64,      // number of keys per Get buffer.
-	})
-	if err != nil {
-		panic(err)
-	}
-	wrapper := cache.New(cacheClient, &http.Client{})
 	kustomizer := krusty.MakeKustomizer(
 		build.HonorKustomizeFlags(krusty.MakeDefaultOptions()))
 	pwd, err := os.Getwd()
@@ -38,7 +42,7 @@ func main() {
 		Dst:  filepath.Join(os.TempDir(), "kustomize"+strconv.Itoa(int(z.FastRand()))),
 	}
 	path := "overlays/dev"
-	k := kustomize.New(kustomizer, &client, client.Dst, client.Src, path, wrapper)
+	k := kustomize.New(kustomizer, &client, client.Dst, client.Src, path, kustomize.Options{})
 	manifests, err := k.Render()
 	if err != nil {
 		panic(err)
