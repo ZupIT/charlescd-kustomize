@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/dgraph-io/ristretto v0.1.0
-	github.com/hashicorp/go-getter v1.5.9
+	github.com/hashicorp/go-getter v1.5.11
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.17.0
 	github.com/stretchr/testify v1.7.0
