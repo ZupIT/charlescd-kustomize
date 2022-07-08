@@ -1,3 +1,5 @@
+# The Charles project has been archived by Zup Innovation. It might start again eventually; however, we won't deliver support for now.
+
 ## Description 
 A kustomize lib that downloads the contents from the source, do the `kustomize build` of kustomize 
 and return an array of manifests\
